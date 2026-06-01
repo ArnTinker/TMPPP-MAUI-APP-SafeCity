@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.NewsPage"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="News">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Header -->
+        <Label Grid.Row="0" Text="SafeCity News"
+               Style="{StaticResource SectionTitle}"
+               Margin="20,16,20,0"/>
+
+        <!-- Sort picker -->
+        <Picker Grid.Row="1"
+                ItemsSource="{Binding SortStrategies}"
+                SelectedItem="{Binding ActiveSortStrategy}"
+                ItemDisplayBinding="{Binding DisplayName}"
+                Title="Sort by"
+                Margin="20,8,20,8"
+                TextColor="{StaticResource TextSecondary}"/>
+
+        <!-- Feed -->
+        <RefreshView Grid.Row="2"
+                     Command="{Binding LoadCommand}"
+                     IsRefreshing="{Binding IsBusy}"
+                     RefreshColor="{StaticResource PrimaryAccent}">
+            <CollectionView ItemsSource="{Binding Incidents}"
+                            Margin="20,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Style="{StaticResource IncidentCard}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto"
+                                  ColumnSpacing="12">
+                                <!-- Icon -->
+                                <Frame Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                                       BackgroundColor="{StaticResource SurfaceColor}"
+                                       CornerRadius="12" HasShadow="False"
+                                       Padding="12" WidthRequest="52" HeightRequest="52"
+                                       VerticalOptions="Start">
+                                    <Label Text="{Binding DefaultIcon}" FontSize="22"
+                                           HorizontalOptions="Center"/>
+                                </Frame>
+                                <!-- Title -->
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       FontSize="15" LineBreakMode="TailTruncation"/>
+                                <!-- Address / time -->
+                                <Label Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding Address}"
+                                       Style="{StaticResource CaptionText}"/>
+                                <!-- Stats -->
+                                <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="16">
+                                    <Label Text="{Binding UpvoteCount, StringFormat='▲ {0}'}"
+                                           Style="{StaticResource CaptionText}"/>
+                                    <Label Text="{Binding ViewCount, StringFormat='👁 {0}'}"
+                                           Style="{StaticResource CaptionText}"/>
+                                    <Label Text="{Binding CommentCount, StringFormat='💬 {0}'}"
+                                           Style="{StaticResource CaptionText}"/>
+                                </HorizontalStackLayout>
+                                <!-- Severity pill -->
+                                <Frame Grid.Row="0" Grid.Column="2"
+                                       BackgroundColor="{StaticResource SurfaceColor}"
+                                       CornerRadius="8" HasShadow="False"
+                                       Padding="8,4" VerticalOptions="Start">
+                                    <Label Text="{Binding Severity}"
+                                           Style="{StaticResource CaptionText}"
+                                           TextColor="{StaticResource PrimaryAccent}"/>
+                                </Frame>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Margin="0,60,0,0">
+                        <Label Text="No incidents yet." Style="{StaticResource BodyText}"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Pull to refresh or submit the first report!"
+                               Style="{StaticResource CaptionText}"
+                               HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

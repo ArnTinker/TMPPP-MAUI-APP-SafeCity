@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SafeCity.ViewModels"
+             x:Class="SafeCity.Views.OnboardingPage"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <Grid RowDefinitions="*,Auto,Auto,Auto" Padding="32,60,32,48">
+
+        <!-- Sample alert cards stacked -->
+        <StackLayout Grid.Row="0" VerticalOptions="Center" Spacing="12">
+            <Frame Style="{StaticResource IncidentCard}">
+                <HorizontalStackLayout Spacing="12">
+                    <Label Text="🚨" FontSize="28" VerticalOptions="Center"/>
+                    <StackLayout>
+                        <Label Text="Vehicle pursuit nearby" FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}" FontSize="15"/>
+                        <Label Text="2 min ago · 0.3 km away" Style="{StaticResource CaptionText}"/>
+                    </StackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+            <Frame Style="{StaticResource IncidentCard}">
+                <HorizontalStackLayout Spacing="12">
+                    <Label Text="🔍" FontSize="28" VerticalOptions="Center"/>
+                    <StackLayout>
+                        <Label Text="Missing person found safe" FontAttributes="Bold"
+                               TextColor="{StaticResource PositiveGreen}" FontSize="15"/>
+                        <Label Text="15 min ago · 1.1 km away" Style="{StaticResource CaptionText}"/>
+                    </StackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+            <Frame Style="{StaticResource IncidentCard}">
+                <HorizontalStackLayout Spacing="12">
+                    <Label Text="⚠️" FontSize="28" VerticalOptions="Center"/>
+                    <StackLayout>
+                        <Label Text="Road closed — Main St" FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryAccent}" FontSize="15"/>
+                        <Label Text="1 hr ago · 0.7 km away" Style="{StaticResource CaptionText}"/>
+                    </StackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+        </StackLayout>
+
+        <!-- Headline -->
+        <Label Grid.Row="1"
+               Text="{Binding Headline}"
+               Style="{StaticResource HeroTitle}"
+               HorizontalTextAlignment="Center"
+               Margin="0,0,0,8"/>
+
+        <!-- Subline -->
+        <Label Grid.Row="2"
+               Text="{Binding Subline}"
+               Style="{StaticResource BodyText}"
+               HorizontalTextAlignment="Center"
+               Margin="0,0,0,32"/>
+
+        <!-- CTA -->
+        <Button Grid.Row="3"
+                Text="Get Started"
+                Style="{StaticResource PrimaryPillButton}"
+                Command="{Binding GetStartedCommand}"
+                HorizontalOptions="Fill"/>
+    </Grid>
+
+</ContentPage>

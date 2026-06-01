@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:SafeCity.Converters"
+             x:Class="SafeCity.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Value converters available app-wide -->
+            <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <conv:InverseBoolConverter    x:Key="InverseBoolConverter" />
+            <conv:BoolToColorConverter    x:Key="BoolToColorConverter" />
+            <conv:BoolToStringConverter   x:Key="BoolToStringConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

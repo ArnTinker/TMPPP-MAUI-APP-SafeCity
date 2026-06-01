@@ -1,0 +1,19 @@
+# Environment variables — NEVER commit
+.env
+
+# .NET build outputs
+bin/
+obj/
+
+# Rider / VS / VS Code
+.idea/
+.vs/
+*.user
+*.suo
+
+# macOS
+.DS_Store
+
+# Android keystore
+*.jks
+*.keystore

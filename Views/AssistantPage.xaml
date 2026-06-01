@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.AssistantPage"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Assistant">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource CardBackground}"
+               CornerRadius="0" HasShadow="False" Padding="20,16">
+            <HorizontalStackLayout Spacing="12">
+                <Label Text="🤖" FontSize="28" VerticalOptions="Center"/>
+                <StackLayout>
+                    <Label Text="SafeCity Assistant"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"
+                           FontSize="17"/>
+                    <Label Text="{Binding IsAvailable, Converter={x:StaticResource BoolToStringConverter},
+                               ConverterParameter='Online|Offline'}"
+                           Style="{StaticResource CaptionText}"
+                           TextColor="{Binding IsAvailable, Converter={x:StaticResource BoolToColorConverter},
+                               ConverterParameter='#34C759|#FF3B30'}"/>
+                </StackLayout>
+            </HorizontalStackLayout>
+        </Frame>
+
+        <!-- Chat messages -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Messages}"
+                        Margin="0,8">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="0,4">
+                        <Frame Style="{StaticResource UserBubble}"
+                               IsVisible="{Binding IsUser}">
+                            <Label Text="{Binding Text}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="15"/>
+                        </Frame>
+                        <Frame Style="{StaticResource AiBubble}"
+                               IsVisible="{Binding IsUser, Converter={x:StaticResource InverseBoolConverter}}">
+                            <Label Text="{Binding Text}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="15"/>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Input bar -->
+        <Frame Grid.Row="2"
+               BackgroundColor="{StaticResource CardBackground}"
+               CornerRadius="0" HasShadow="False" Padding="12,8">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Frame Grid.Column="0"
+                       BackgroundColor="{StaticResource SurfaceColor}"
+                       CornerRadius="22" HasShadow="False" Padding="16,8">
+                    <Entry Placeholder="Ask a safety question…"
+                           Text="{Binding InputText}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}"
+                           ReturnCommand="{Binding SendCommand}"/>
+                </Frame>
+                <Button Grid.Column="1"
+                        Text="↑"
+                        BackgroundColor="{StaticResource PrimaryAccent}"
+                        TextColor="{StaticResource PrimaryButtonText}"
+                        FontSize="20" FontAttributes="Bold"
+                        CornerRadius="22" WidthRequest="44" HeightRequest="44"
+                        Command="{Binding SendCommand}"
+                        IsEnabled="{Binding IsNotBusy}"/>
+            </Grid>
+        </Frame>
+
+    </Grid>
+
+</ContentPage>

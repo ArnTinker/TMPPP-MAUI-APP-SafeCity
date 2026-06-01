@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.LoginPage"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <StackLayout Padding="32,60,32,48" Spacing="20" VerticalOptions="Center">
+
+            <Label Text="SafeCity" Style="{StaticResource HeroTitle}"
+                   HorizontalTextAlignment="Center"/>
+            <Label Text="Stay informed. Stay safe." Style="{StaticResource BodyText}"
+                   HorizontalTextAlignment="Center" Margin="0,0,0,24"/>
+
+            <!-- Google sign-in -->
+            <Button Text="Continue with Google"
+                    Style="{StaticResource SecondaryPillButton}"
+                    Command="{Binding ContinueWithGoogleCommand}"/>
+
+            <Label Text="or continue with phone / email"
+                   Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"/>
+
+            <!-- Email / phone field -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14" HasShadow="False" Padding="16,4"
+                   BorderColor="{StaticResource SurfaceColor}">
+                <Entry Style="{StaticResource DarkEntry}"
+                       Placeholder="Phone number or email"
+                       Text="{Binding PhoneOrEmail}"
+                       Keyboard="Email"/>
+            </Frame>
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource AlertRed}"
+                   IsVisible="{Binding ErrorMessage, Converter={x:StaticResource StringNotEmptyConverter}}"
+                   HorizontalTextAlignment="Center"/>
+
+            <Button Text="Continue"
+                    Style="{StaticResource PrimaryPillButton}"
+                    Command="{Binding ContinueCommand}"
+                    IsEnabled="{Binding IsNotBusy}"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource PrimaryAccent}"
+                               HorizontalOptions="Center"/>
+
+            <Label Text="By continuing you accept our Terms &amp; Privacy Policy."
+                   Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center" Margin="0,24,0,0"/>
+            <Label Text="We don't sell your data."
+                   Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{StaticResource PositiveGreen}"/>
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

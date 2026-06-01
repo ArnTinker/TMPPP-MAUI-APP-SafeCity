@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell x:Class="SafeCity.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:SafeCity.Views"
+       Title="SafeCity">
+
+    <!-- Onboarding flow (pre-auth) -->
+    <ShellContent x:Name="OnboardingContent"
+                  Route="OnboardingPage"
+                  ContentTemplate="{DataTemplate views:OnboardingPage}"
+                  IsVisible="False"/>
+    <ShellContent Route="LoginPage"
+                  ContentTemplate="{DataTemplate views:LoginPage}"
+                  IsVisible="False"/>
+    <ShellContent Route="CreateProfilePage"
+                  ContentTemplate="{DataTemplate views:CreateProfilePage}"
+                  IsVisible="False"/>
+    <ShellContent Route="LocationPermissionPage"
+                  ContentTemplate="{DataTemplate views:LocationPermissionPage}"
+                  IsVisible="False"/>
+
+    <!-- Main 5-tab navigation -->
+    <TabBar x:Name="MainTabs" Route="MainTabs">
+        <ShellContent Title="News"
+                      Icon="tab_news.png"
+                      Route="NewsPage"
+                      ContentTemplate="{DataTemplate views:NewsPage}"/>
+        <ShellContent Title="Map"
+                      Icon="tab_map.png"
+                      Route="HomePage"
+                      ContentTemplate="{DataTemplate views:HomePage}"/>
+        <ShellContent Title="Go Live"
+                      Icon="tab_report.png"
+                      Route="ReportPage"
+                      ContentTemplate="{DataTemplate views:ReportPage}"/>
+        <ShellContent Title="Alerts"
+                      Icon="tab_alerts.png"
+                      Route="AlertsPage"
+                      ContentTemplate="{DataTemplate views:AlertsPage}"/>
+        <ShellContent Title="Profile"
+                      Icon="tab_profile.png"
+                      Route="ProfilePage"
+                      ContentTemplate="{DataTemplate views:ProfilePage}"/>
+    </TabBar>
+
+</Shell>

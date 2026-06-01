@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.ReportPage"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Go Live">
+
+    <ScrollView>
+        <StackLayout Padding="20,16" Spacing="16">
+
+            <Label Text="Report an Incident" Style="{StaticResource SectionTitle}"/>
+
+            <!-- Location row -->
+            <Frame Style="{StaticResource IncidentCard}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="{Binding DetectedAddress}"
+                           Style="{StaticResource BodyText}"
+                           VerticalOptions="Center"/>
+                    <Button Grid.Column="1" Text="📍 Detect"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            TextColor="{StaticResource TextPrimary}"
+                            CornerRadius="10" FontSize="13"
+                            HeightRequest="40" Padding="10,0"
+                            Command="{Binding DetectLocationCommand}"/>
+                </Grid>
+            </Frame>
+
+            <!-- Type picker -->
+            <Label Text="Incident Type" Style="{StaticResource BodyText}"/>
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14" HasShadow="False" Padding="4"
+                   BorderColor="{StaticResource SurfaceColor}">
+                <Picker ItemsSource="{Binding IncidentTypes}"
+                        SelectedItem="{Binding SelectedType}"
+                        TextColor="{StaticResource TextPrimary}"/>
+            </Frame>
+
+            <!-- Severity picker -->
+            <Label Text="Severity" Style="{StaticResource BodyText}"/>
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14" HasShadow="False" Padding="4"
+                   BorderColor="{StaticResource SurfaceColor}">
+                <Picker ItemsSource="{Binding SeverityLevels}"
+                        SelectedItem="{Binding SelectedSeverity}"
+                        TextColor="{StaticResource TextPrimary}"/>
+            </Frame>
+
+            <!-- Description -->
+            <Label Text="Description" Style="{StaticResource BodyText}"/>
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14" HasShadow="False" Padding="12"
+                   BorderColor="{StaticResource SurfaceColor}">
+                <Editor Style="{StaticResource DarkEditor}"
+                        Placeholder="What's happening? Be specific."
+                        Text="{Binding Description}"
+                        HeightRequest="100"/>
+            </Frame>
+
+            <!-- Attach photo -->
+            <Button Text="📷 Attach Photo"
+                    Style="{StaticResource SecondaryPillButton}"
+                    Command="{Binding AttachPhotoCommand}"/>
+
+            <!-- Anonymous toggle -->
+            <HorizontalStackLayout Spacing="12">
+                <Switch IsToggled="{Binding IsAnonymous}"
+                        OnColor="{StaticResource PrimaryAccent}"/>
+                <Label Text="Report anonymously" Style="{StaticResource BodyText}"
+                       VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+
+            <!-- Error -->
+            <Label Text="{Binding SubmitError}"
+                   TextColor="{StaticResource AlertRed}"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding SubmitError, Converter={x:StaticResource StringNotEmptyConverter}}"/>
+
+            <!-- Submit -->
+            <Button Text="Submit Report"
+                    Style="{StaticResource PrimaryPillButton}"
+                    Command="{Binding SubmitCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    HorizontalOptions="Fill"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource PrimaryAccent}"
+                               HorizontalOptions="Center"/>
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

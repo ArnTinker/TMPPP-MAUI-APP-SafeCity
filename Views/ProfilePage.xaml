@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.ProfilePage"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Profile">
+
+    <ScrollView>
+        <StackLayout Padding="20,32" Spacing="20">
+
+            <!-- Avatar + name -->
+            <StackLayout HorizontalOptions="Center" Spacing="8">
+                <Frame BackgroundColor="{StaticResource CardBackground}"
+                       CornerRadius="40" HasShadow="False"
+                       WidthRequest="80" HeightRequest="80"
+                       HorizontalOptions="Center" Padding="0">
+                    <Label Text="👤" FontSize="40"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Frame>
+                <Label Text="{Binding DisplayName}"
+                       Style="{StaticResource SectionTitle}"
+                       HorizontalTextAlignment="Center"/>
+                <Label Text="{Binding Email}"
+                       Style="{StaticResource CaptionText}"
+                       HorizontalTextAlignment="Center"/>
+            </StackLayout>
+
+            <!-- Premium card -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="16" HasShadow="False"
+                   Padding="20" BorderColor="{StaticResource PrimaryAccent}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackLayout Grid.Column="0">
+                        <Label Text="🌟 Upgrade to Premium"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryAccent}"
+                               FontSize="16"/>
+                        <Label Text="Unlock custom alert zones &amp; priority notifications."
+                               Style="{StaticResource BodyText}"/>
+                    </StackLayout>
+                    <Label Grid.Column="1" Text="→"
+                           TextColor="{StaticResource PrimaryAccent}"
+                           FontSize="20" VerticalOptions="Center"/>
+                </Grid>
+            </Frame>
+
+            <!-- Achievements -->
+            <Label Text="My Achievements" Style="{StaticResource SectionTitle}"/>
+            <Frame Style="{StaticResource IncidentCard}">
+                <HorizontalStackLayout Spacing="12">
+                    <Label Text="🏅" FontSize="32" VerticalOptions="Center"/>
+                    <StackLayout>
+                        <Label Text="{Binding AchievementBadge}"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryAccent}"
+                               FontSize="15"/>
+                        <Label Text="{Binding ReportCount, StringFormat='{0} reports submitted'}"
+                               Style="{StaticResource CaptionText}"/>
+                    </StackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Safety Network -->
+            <Button Text="Join Safety Network"
+                    Style="{StaticResource SecondaryPillButton}"
+                    Command="{Binding JoinSafetyNetworkCommand}"
+                    IsVisible="{Binding IsPremium, Converter={x:StaticResource InverseBoolConverter}}"/>
+
+            <!-- Logout -->
+            <Button Text="Log Out"
+                    Style="{StaticResource DestructivePillButton}"
+                    Command="{Binding LogoutCommand}"
+                    HorizontalOptions="Fill"
+                    Margin="0,16,0,0"/>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>
