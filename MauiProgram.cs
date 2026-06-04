@@ -10,6 +10,8 @@ using SafeCity.Patterns.Structural.Adapter;
 using SafeCity.Patterns.Structural.Facade;
 using SafeCity.Patterns.Structural.Proxy;
 using SafeCity.Services;
+using SafeCity.Services.Maps;
+using SafeCity.Services.Routing;
 using SafeCity.ViewModels;
 using SafeCity.Views;
 
@@ -28,6 +30,13 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf",   "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf",  "OpenSansSemibold");
+            })
+            .ConfigureMauiHandlers(handlers =>
+            {
+#if ANDROID
+                handlers.AddHandler<Microsoft.Maui.Controls.WebView,
+                    SafeCity.Platforms.Android.CustomWebViewHandler>();
+#endif
             });
 
         var s = builder.Services;
@@ -35,6 +44,10 @@ public static class MauiProgram
         // ── HTTP clients ──
         s.AddHttpClient("Gemini");
         s.AddHttpClient("Media");
+        s.AddHttpClient("ORS", client =>
+        {
+            client.BaseAddress = new Uri("https://api.openrouteservice.org");
+        });
 
         // ── Database ──
         s.AddSingleton<DatabaseContext>();
@@ -70,6 +83,11 @@ public static class MauiProgram
             return new GeminiAssistantAdapter(factory, key);
         });
 
+        // ── PATTERN 6 (continued): Adapter — map.md / MapLibre map provider ──
+        s.AddSingleton<MapMdProvider>();
+        s.AddSingleton<IMapProvider>(sp =>
+            new MapMdAdapter(sp.GetRequiredService<MapMdProvider>()));
+
         // ── PATTERN 8: Proxy — media loader with caching ──
         s.AddSingleton<IMediaLoader>(sp =>
         {
@@ -82,6 +100,11 @@ public static class MauiProgram
         s.AddSingleton<IMediaService,    MediaService>();
         s.AddSingleton<IAuthService,     AuthService>();
 
+        // ── ORS routing, geocoding, isochrones (Dependency Inversion: VMs use interfaces) ──
+        s.AddSingleton<IRoutingService,   OrsRoutingService>();
+        s.AddSingleton<IGeocodingService, OrsGeocodingService>();
+        s.AddSingleton<IIsochroneService, OrsIsochroneService>();
+
         // ── ViewModels (Transient = fresh VM per navigation) ──
         s.AddTransient<OnboardingViewModel>();
         s.AddTransient<LoginViewModel>();
@@ -93,6 +116,7 @@ public static class MauiProgram
         s.AddTransient<ProfileViewModel>();
         s.AddTransient<ReportViewModel>();
         s.AddTransient<AssistantViewModel>();
+        s.AddTransient<IncidentDetailViewModel>();
 
         // ── Views ──
         s.AddTransient<OnboardingPage>();
@@ -105,6 +129,7 @@ public static class MauiProgram
         s.AddTransient<ProfilePage>();
         s.AddTransient<ReportPage>();
         s.AddTransient<AssistantPage>();
+        s.AddTransient<IncidentDetailPage>();
 
         s.AddSingleton<App>();
 

@@ -10,14 +10,28 @@ public static class EnvHelper
     {
         if (_loaded) return;
         _loaded = true;
-        try
+
+        // 1. Prefer .env in AppDataDirectory (user can push a file here for overrides)
+        var dataEnv = Path.Combine(FileSystem.AppDataDirectory, ".env");
+        if (File.Exists(dataEnv))
         {
-            // On Android, .env lives in AppDataDirectory (copied from Raw assets on first run)
-            var envPath = Path.Combine(FileSystem.AppDataDirectory, ".env");
-            if (File.Exists(envPath))
-                Env.Load(envPath);
+            Env.Load(dataEnv);
+            return;
         }
-        catch { /* .env is optional */ }
+
+        // 2. Fall back to the env file bundled as a Raw asset inside the APK.
+        // Android AAPT strips dotfiles, so the bundled copy is named "dotenv"
+        // (no leading dot). Try both names for forward/backward compatibility.
+        foreach (var name in new[] { "dotenv", ".env" })
+        {
+            try
+            {
+                using var stream = FileSystem.OpenAppPackageFileAsync(name).GetAwaiter().GetResult();
+                Env.Load(stream);
+                return;
+            }
+            catch { /* try next */ }
+        }
     }
 
     public static string? Get(string key) => Environment.GetEnvironmentVariable(key);

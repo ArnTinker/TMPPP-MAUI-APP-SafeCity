@@ -14,6 +14,15 @@ public class RealMediaLoader : IMediaLoader
     {
         try
         {
+            // Local file path — read directly so the proxy can still cache the bytes
+            if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!File.Exists(url)) return null;
+                var local = await File.ReadAllBytesAsync(url, ct);
+                return new MemoryStream(local);
+            }
+
             var response = await _http.GetAsync(url, ct);
             response.EnsureSuccessStatusCode();
             var bytes = await response.Content.ReadAsByteArrayAsync(ct);

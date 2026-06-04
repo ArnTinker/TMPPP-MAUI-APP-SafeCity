@@ -78,13 +78,13 @@
         <Setter Property="FontSize"        Value="17" />
         <Setter Property="HeightRequest"   Value="56" />
         <Setter Property="Padding"         Value="24,0" />
-        <Setter Property="BorderColor"     Value="{StaticResource SurfaceColor}" />
-        <Setter Property="BorderWidth"     Value="1" />
+        <Setter Property="BorderColor"     Value="{StaticResource PrimaryAccent}" />
+        <Setter Property="BorderWidth"     Value="1.5" />
     </Style>
 
     <Style x:Key="DestructivePillButton" TargetType="Button">
         <Setter Property="BackgroundColor" Value="{StaticResource DestructiveColor}" />
-        <Setter Property="TextColor"       Value="{StaticResource TextPrimary}" />
+        <Setter Property="TextColor"       Value="{StaticResource TextWhite}" />
         <Setter Property="CornerRadius"    Value="28" />
         <Setter Property="FontAttributes"  Value="Bold" />
         <Setter Property="FontSize"        Value="17" />
@@ -164,7 +164,7 @@
 
     <!-- ══ Chat bubble (Assistant page) ══ -->
     <Style x:Key="UserBubble" TargetType="Frame">
-        <Setter Property="BackgroundColor" Value="{StaticResource ActionBlue}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryYellow}" />
         <Setter Property="CornerRadius"    Value="18" />
         <Setter Property="HasShadow"       Value="False" />
         <Setter Property="Padding"         Value="14,10" />

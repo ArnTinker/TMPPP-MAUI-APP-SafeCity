@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:SafeCity.Models"
              x:Class="SafeCity.Views.NewsPage"
              BackgroundColor="{StaticResource BackgroundColor}"
              Title="News">
@@ -26,51 +27,67 @@
                      Command="{Binding LoadCommand}"
                      IsRefreshing="{Binding IsBusy}"
                      RefreshColor="{StaticResource PrimaryAccent}">
-            <CollectionView ItemsSource="{Binding Incidents}"
-                            Margin="20,0">
+            <CollectionView x:Name="FeedList"
+                            ItemsSource="{Binding Incidents}"
+                            Margin="20,0"
+                            SelectionMode="Single"
+                            SelectionChanged="OnSelectionChanged">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:Incident">
                         <Frame Style="{StaticResource IncidentCard}">
-                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto"
-                                  ColumnSpacing="12">
-                                <!-- Icon -->
-                                <Frame Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
-                                       BackgroundColor="{StaticResource SurfaceColor}"
-                                       CornerRadius="12" HasShadow="False"
-                                       Padding="12" WidthRequest="52" HeightRequest="52"
-                                       VerticalOptions="Start">
-                                    <Label Text="{Binding DefaultIcon}" FontSize="22"
-                                           HorizontalOptions="Center"/>
-                                </Frame>
-                                <!-- Title -->
-                                <Label Grid.Row="0" Grid.Column="1"
-                                       Text="{Binding Title}"
-                                       FontAttributes="Bold"
-                                       TextColor="{StaticResource TextPrimary}"
-                                       FontSize="15" LineBreakMode="TailTruncation"/>
-                                <!-- Address / time -->
-                                <Label Grid.Row="1" Grid.Column="1"
-                                       Text="{Binding Address}"
-                                       Style="{StaticResource CaptionText}"/>
-                                <!-- Stats -->
-                                <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="16">
-                                    <Label Text="{Binding UpvoteCount, StringFormat='▲ {0}'}"
+                            <StackLayout Spacing="10">
+                                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto"
+                                      ColumnSpacing="12">
+                                    <!-- Icon — Border replaces Frame: Frame.CornerRadius as a direct
+                                         attribute fails in runtime-parsed DataTemplates (MAUI .NET 10);
+                                         Border.StrokeShape works correctly. -->
+                                    <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                                            BackgroundColor="{StaticResource SurfaceColor}"
+                                            StrokeShape="RoundRectangle 12"
+                                            StrokeThickness="0"
+                                            Padding="12" WidthRequest="52" HeightRequest="52"
+                                            VerticalOptions="Start">
+                                        <Label Text="{Binding DefaultIcon}" FontSize="22"
+                                               HorizontalOptions="Center"/>
+                                    </Border>
+                                    <!-- Title -->
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource TextPrimary}"
+                                           FontSize="15" LineBreakMode="TailTruncation"/>
+                                    <!-- Address -->
+                                    <Label Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding Address}"
                                            Style="{StaticResource CaptionText}"/>
-                                    <Label Text="{Binding ViewCount, StringFormat='👁 {0}'}"
-                                           Style="{StaticResource CaptionText}"/>
-                                    <Label Text="{Binding CommentCount, StringFormat='💬 {0}'}"
-                                           Style="{StaticResource CaptionText}"/>
-                                </HorizontalStackLayout>
-                                <!-- Severity pill -->
-                                <Frame Grid.Row="0" Grid.Column="2"
-                                       BackgroundColor="{StaticResource SurfaceColor}"
-                                       CornerRadius="8" HasShadow="False"
-                                       Padding="8,4" VerticalOptions="Start">
-                                    <Label Text="{Binding Severity}"
-                                           Style="{StaticResource CaptionText}"
-                                           TextColor="{StaticResource PrimaryAccent}"/>
-                                </Frame>
-                            </Grid>
+                                    <!-- Stats -->
+                                    <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="16">
+                                        <Label Text="{Binding UpvoteCount, StringFormat='▲ {0}'}"
+                                               Style="{StaticResource CaptionText}"/>
+                                        <Label Text="{Binding ViewCount, StringFormat='👁 {0}'}"
+                                               Style="{StaticResource CaptionText}"/>
+                                        <Label Text="{Binding CommentCount, StringFormat='💬 {0}'}"
+                                               Style="{StaticResource CaptionText}"/>
+                                    </HorizontalStackLayout>
+                                    <!-- Severity pill — same Border fix -->
+                                    <Border Grid.Row="0" Grid.Column="2"
+                                            BackgroundColor="{StaticResource SurfaceColor}"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="0"
+                                            Padding="8,4" VerticalOptions="Start">
+                                        <Label Text="{Binding Severity}"
+                                               Style="{StaticResource CaptionText}"
+                                               TextColor="{StaticResource PrimaryAccent}"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Thumbnail loaded via CachedIncidentMediaProxy -->
+                                <Image Source="{Binding ThumbnailSource}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="140"
+                                       IsVisible="{Binding ThumbnailSource,
+                                           Converter={x:StaticResource NullToBoolConverter}}"/>
+                            </StackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

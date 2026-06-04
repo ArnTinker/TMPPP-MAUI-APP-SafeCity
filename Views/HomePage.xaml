@@ -1,55 +1,121 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:SafeCity.Views.Controls"
+             xmlns:models="clr-namespace:SafeCity.Models"
              x:Class="SafeCity.Views.HomePage"
              BackgroundColor="{StaticResource BackgroundColor}"
              Title="Map">
 
     <Grid RowDefinitions="*,Auto">
 
-        <!-- Map placeholder (IMapProvider abstracted behind this surface) -->
+        <!-- ── Map surface + overlays ── -->
         <Grid Grid.Row="0">
-            <BoxView Color="#0D1117" />
-            <!-- Grid lines for map feel -->
-            <Grid RowDefinitions="*,*,*,*" ColumnDefinitions="*,*,*,*" Opacity="0.1">
-                <BoxView Grid.Row="0" Grid.ColumnSpan="4" Color="{StaticResource TextTertiary}" HeightRequest="1" VerticalOptions="Start"/>
-                <BoxView Grid.Row="1" Grid.ColumnSpan="4" Color="{StaticResource TextTertiary}" HeightRequest="1" VerticalOptions="Start"/>
-                <BoxView Grid.Row="2" Grid.ColumnSpan="4" Color="{StaticResource TextTertiary}" HeightRequest="1" VerticalOptions="Start"/>
-            </Grid>
-            <!-- User location dot -->
-            <Ellipse WidthRequest="20" HeightRequest="20"
-                     Fill="{StaticResource PrimaryAccent}"
-                     HorizontalOptions="Center" VerticalOptions="Center"/>
-            <Ellipse WidthRequest="60" HeightRequest="60"
-                     Fill="{StaticResource PrimaryAccent}"
-                     Opacity="0.15"
-                     HorizontalOptions="Center" VerticalOptions="Center"/>
 
-            <!-- Layer label -->
+            <!-- Real MapLibre map (fills the cell) -->
+            <controls:MapMdView HorizontalOptions="Fill" VerticalOptions="Fill" />
+
+            <!-- ── Search bar (top overlay) ── -->
             <Frame BackgroundColor="{StaticResource CardBackground}"
-                   CornerRadius="10" HasShadow="False" Padding="10,6"
-                   HorizontalOptions="Start" VerticalOptions="Start" Margin="16">
-                <Label Text="🗂 All Incidents" TextColor="{StaticResource TextPrimary}" FontSize="13"/>
+                   CornerRadius="24" HasShadow="False" Padding="12,6"
+                   HorizontalOptions="Fill" VerticalOptions="Start"
+                   Margin="16,12,16,0"
+                   BorderColor="{StaticResource SurfaceColor}">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Label Grid.Column="0" Text="🔍"
+                           FontSize="15" VerticalOptions="Center"
+                           Margin="0,0,6,0"/>
+                    <Entry Grid.Column="1"
+                           Text="{Binding SearchText}"
+                           Placeholder="Search address in Chișinău…"
+                           PlaceholderColor="{StaticResource TextGray}"
+                           TextColor="{StaticResource TextPrimary}"
+                           BackgroundColor="Transparent"
+                           ClearButtonVisibility="WhileEditing"
+                           ReturnType="Search"
+                           FontSize="14"/>
+                    <Label Grid.Column="2"
+                           Text="✕"
+                           FontSize="15"
+                           TextColor="{StaticResource TextGray}"
+                           VerticalOptions="Center"
+                           IsVisible="{Binding ShowSearchResults}"
+                           Margin="6,0,0,0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding DismissSearchCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
             </Frame>
 
-            <!-- Incident markers -->
-            <CollectionView ItemsSource="{Binding NearbyIncidents}"
-                            HorizontalOptions="Fill" VerticalOptions="Fill">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label Text="{Binding DefaultIcon}" FontSize="24"
-                               Margin="20,8" HorizontalOptions="Start"/>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <!-- ── Search results dropdown ── -->
+            <Frame IsVisible="{Binding ShowSearchResults}"
+                   BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="16" HasShadow="False"
+                   HorizontalOptions="Fill" VerticalOptions="Start"
+                   Margin="16,64,16,0"
+                   BorderColor="{StaticResource SurfaceColor}"
+                   Padding="0">
+                <CollectionView ItemsSource="{Binding SearchResults}"
+                                SelectedItem="{Binding SelectedSearchResult}"
+                                SelectionMode="Single"
+                                MaximumHeightRequest="220">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:GeocodingResult">
+                            <Grid Padding="16,12" ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="📍"
+                                       FontSize="14" VerticalOptions="Center"
+                                       Margin="0,0,8,0"/>
+                                <Label Grid.Column="1"
+                                       Text="{Binding Label}"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       FontSize="13"
+                                       LineBreakMode="TailTruncation"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Frame>
 
-            <!-- FAB report button -->
+            <!-- ── Layer label ── -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="10" HasShadow="False" Padding="10,6"
+                   HorizontalOptions="Start" VerticalOptions="Start" Margin="16,68">
+                <Label Text="🗂 All Incidents"
+                       TextColor="{StaticResource TextPrimary}" FontSize="13"/>
+            </Frame>
+
+            <!-- ── Route / Alert-Zone status bar (bottom of map, above FAB) ── -->
+            <Frame IsVisible="{Binding RouteStatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="16" HasShadow="False"
+                   HorizontalOptions="Fill" VerticalOptions="End"
+                   Margin="16,0,90,20"
+                   BorderColor="{StaticResource PrimaryYellow}"
+                   Padding="12,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="{Binding RouteStatusMessage}"
+                           TextColor="{StaticResource TextPrimary}"
+                           FontSize="13" VerticalOptions="Center"
+                           LineBreakMode="TailTruncation"/>
+                    <Button Grid.Column="1"
+                            Text="✕"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource TextGray}"
+                            FontSize="14"
+                            Command="{Binding ClearRouteCommand}"
+                            IsVisible="{Binding HasActiveRoute}"
+                            WidthRequest="32" HeightRequest="32"
+                            Padding="0"/>
+                </Grid>
+            </Frame>
+
+            <!-- Floating report button -->
             <Button Text="+"
-                    BackgroundColor="{StaticResource PrimaryAccent}"
-                    TextColor="{StaticResource PrimaryButtonText}"
+                    BackgroundColor="{StaticResource PrimaryYellow}"
+                    TextColor="{StaticResource TextOnYellow}"
                     FontSize="28" FontAttributes="Bold"
                     CornerRadius="32" WidthRequest="64" HeightRequest="64"
                     HorizontalOptions="End" VerticalOptions="End"
@@ -57,7 +123,7 @@
                     Command="{Binding GoToReportCommand}"/>
         </Grid>
 
-        <!-- Bottom stats bar -->
+        <!-- ── Bottom stats bar ── -->
         <Frame Grid.Row="1"
                BackgroundColor="{StaticResource CardBackground}"
                CornerRadius="0" HasShadow="False"
@@ -66,7 +132,7 @@
                 <StackLayout Grid.Column="0" HorizontalOptions="Center">
                     <Label Text="{Binding NearbyCount, StringFormat='{0}'}"
                            FontSize="24" FontAttributes="Bold"
-                           TextColor="{StaticResource AlertRed}"
+                           TextColor="{StaticResource PrimaryYellow}"
                            HorizontalTextAlignment="Center"/>
                     <Label Text="Nearby Active" Style="{StaticResource CaptionText}"
                            HorizontalTextAlignment="Center"/>
@@ -74,7 +140,7 @@
                 <StackLayout Grid.Column="1" HorizontalOptions="Center">
                     <Label Text="{Binding NearbyUsers}"
                            FontSize="24" FontAttributes="Bold"
-                           TextColor="{StaticResource PrimaryAccent}"
+                           TextColor="{StaticResource PrimaryYellow}"
                            HorizontalTextAlignment="Center"/>
                     <Label Text="Nearby Users" Style="{StaticResource CaptionText}"
                            HorizontalTextAlignment="Center"/>

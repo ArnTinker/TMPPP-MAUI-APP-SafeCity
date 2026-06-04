@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.IncidentDetailPage"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Incident">
+
+    <ScrollView>
+        <StackLayout Padding="20,16" Spacing="16">
+
+            <!-- Header card: type badge + title + meta -->
+            <Frame Style="{StaticResource IncidentCard}">
+                <StackLayout Spacing="10">
+
+                    <HorizontalStackLayout Spacing="12">
+                        <Label Text="{Binding Incident.DefaultIcon}" FontSize="32"
+                               VerticalOptions="Center"/>
+                        <!-- Severity badge — yellow pill matching alert style -->
+                        <Frame BackgroundColor="{StaticResource PrimaryAccent}"
+                               CornerRadius="8" HasShadow="False" Padding="10,4"
+                               VerticalOptions="Center">
+                            <Label Text="{Binding Incident.Severity}"
+                                   TextColor="{StaticResource TextOnYellow}"
+                                   FontSize="12" FontAttributes="Bold"/>
+                        </Frame>
+                        <!-- State badge -->
+                        <Frame BackgroundColor="{StaticResource SurfaceColor}"
+                               CornerRadius="8" HasShadow="False" Padding="10,4"
+                               VerticalOptions="Center">
+                            <Label Text="{Binding Incident.State}"
+                                   Style="{StaticResource CaptionText}"
+                                   TextColor="{StaticResource PrimaryAccent}"/>
+                        </Frame>
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding Incident.Title}"
+                           Style="{StaticResource SectionTitle}"
+                           LineBreakMode="WordWrap"/>
+
+                    <Label Text="{Binding Incident.Address}"
+                           Style="{StaticResource BodyText}"/>
+
+                    <Label Text="{Binding Incident.CreatedAt, StringFormat='{0:MMM dd, yyyy  HH:mm}'}"
+                           Style="{StaticResource CaptionText}"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Description -->
+            <Frame Style="{StaticResource IncidentCard}">
+                <StackLayout Spacing="6">
+                    <Label Text="Description"
+                           FontAttributes="Bold" FontSize="13"
+                           TextColor="{StaticResource TextSecondary}"/>
+                    <Label Text="{Binding Incident.Description}"
+                           Style="{StaticResource BodyText}"
+                           LineBreakMode="WordWrap"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Photo (loaded via CachedIncidentMediaProxy) -->
+            <Frame Style="{StaticResource IncidentCard}"
+                   IsVisible="{Binding HasPhoto}">
+                <Image Source="{Binding PhotoSource}"
+                       Aspect="AspectFill"
+                       HeightRequest="240"
+                       HorizontalOptions="Fill"/>
+            </Frame>
+
+            <!-- Stats row -->
+            <Frame Style="{StaticResource IncidentCard}">
+                <Grid ColumnDefinitions="*,*,*">
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center">
+                        <Label Text="{Binding Incident.UpvoteCount}"
+                               FontSize="22" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Upvotes" Style="{StaticResource CaptionText}"
+                               HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center">
+                        <Label Text="{Binding Incident.ViewCount}"
+                               FontSize="22" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Views" Style="{StaticResource CaptionText}"
+                               HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                    <StackLayout Grid.Column="2" HorizontalOptions="Center">
+                        <Label Text="{Binding Incident.CommentCount}"
+                               FontSize="22" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Comments" Style="{StaticResource CaptionText}"
+                               HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Route here -->
+            <Button Text="🗺 Route Here"
+                    Style="{StaticResource PrimaryPillButton}"
+                    Command="{Binding RouteHereCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    HorizontalOptions="Fill"/>
+
+            <Label Text="{Binding RouteStatus}"
+                   Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding RouteStatus,
+                       Converter={x:StaticResource StringNotEmptyConverter}}"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center"/>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

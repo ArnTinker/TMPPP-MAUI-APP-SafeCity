@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Microsoft.Maui.Controls;
 using SafeCity.Enums;
 using SQLite;
 
@@ -33,9 +35,31 @@ public class Incident
     [Ignore]
     public virtual string DefaultIcon => "📍";
     [Ignore]
-    public virtual string DefaultColor => "#8E8E93";
+    public virtual string DefaultColor => "#9A9A9A";
     [Ignore]
     public virtual IncidentSeverity DefaultSeverity => IncidentSeverity.Medium;
     [Ignore]
     public virtual string[] RequiredFields => ["Title", "Description"];
+
+    /// <summary>First local file path from MediaUrlsJson, or null.</summary>
+    [Ignore]
+    public string? FirstMediaPath
+    {
+        get
+        {
+            try
+            {
+                var paths = JsonSerializer.Deserialize<List<string>>(MediaUrlsJson ?? "[]");
+                return paths?.FirstOrDefault(p => !string.IsNullOrEmpty(p));
+            }
+            catch { return null; }
+        }
+    }
+
+    /// <summary>
+    /// Set by the VM after loading bytes through CachedIncidentMediaProxy.
+    /// Not persisted — runtime-only display asset.
+    /// </summary>
+    [Ignore]
+    public ImageSource? ThumbnailSource { get; set; }
 }

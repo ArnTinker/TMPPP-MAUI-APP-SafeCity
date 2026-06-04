@@ -16,16 +16,16 @@
                 <Grid>
                     <Ellipse WidthRequest="160" HeightRequest="160"
                              Fill="Transparent"
-                             Stroke="{StaticResource AlertRed}"
+                             Stroke="{StaticResource PrimaryYellow}"
                              StrokeThickness="2"/>
                     <Ellipse WidthRequest="110" HeightRequest="110"
                              Fill="Transparent"
-                             Stroke="{StaticResource AlertRed}"
+                             Stroke="{StaticResource PrimaryYellow}"
                              StrokeThickness="1.5"
                              HorizontalOptions="Center"
                              VerticalOptions="Center"/>
                     <Ellipse WidthRequest="60" HeightRequest="60"
-                             Fill="{StaticResource AlertRed}"
+                             Fill="{StaticResource PrimaryYellow}"
                              Opacity="0.2"
                              HorizontalOptions="Center"
                              VerticalOptions="Center"/>

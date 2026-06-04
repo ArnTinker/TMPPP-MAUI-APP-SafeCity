@@ -12,17 +12,23 @@
 
             <!-- Location row -->
             <Frame Style="{StaticResource IncidentCard}">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                    <Label Grid.Row="0" Grid.Column="0"
                            Text="{Binding DetectedAddress}"
                            Style="{StaticResource BodyText}"
                            VerticalOptions="Center"/>
-                    <Button Grid.Column="1" Text="📍 Detect"
+                    <Button Grid.Row="0" Grid.Column="1" Text="📍 Detect"
                             BackgroundColor="{StaticResource SurfaceColor}"
                             TextColor="{StaticResource TextPrimary}"
                             CornerRadius="10" FontSize="13"
                             HeightRequest="40" Padding="10,0"
                             Command="{Binding DetectLocationCommand}"/>
+                    <!-- Green tick once location is set -->
+                    <Label Grid.Row="1" Grid.ColumnSpan="2"
+                           Text="✅ Location set — ready to submit"
+                           TextColor="{StaticResource PrimaryYellow}"
+                           FontSize="12" Margin="0,4,0,0"
+                           IsVisible="{Binding LocationDetected}"/>
                 </Grid>
             </Frame>
 
@@ -58,9 +64,29 @@
             </Frame>
 
             <!-- Attach photo -->
-            <Button Text="📷 Attach Photo"
-                    Style="{StaticResource SecondaryPillButton}"
-                    Command="{Binding AttachPhotoCommand}"/>
+            <Label Text="Photos (optional)" Style="{StaticResource BodyText}"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="📷 Gallery"
+                        Style="{StaticResource SecondaryPillButton}"
+                        Command="{Binding AttachPhotoCommand}"/>
+                <Button Grid.Column="1" Text="📸 Camera"
+                        Style="{StaticResource SecondaryPillButton}"
+                        Command="{Binding AttachCameraCommand}"/>
+            </Grid>
+
+            <!-- Attached photo thumbnails -->
+            <CollectionView ItemsSource="{Binding AttachedMedia}"
+                            ItemsLayout="HorizontalList"
+                            HeightRequest="88">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding .}"
+                               Aspect="AspectFill"
+                               WidthRequest="80" HeightRequest="80"
+                               Margin="0,4,8,4"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <!-- Anonymous toggle -->
             <HorizontalStackLayout Spacing="12">
@@ -72,7 +98,7 @@
 
             <!-- Error -->
             <Label Text="{Binding SubmitError}"
-                   TextColor="{StaticResource AlertRed}"
+                   TextColor="{StaticResource PrimaryYellow}"
                    HorizontalTextAlignment="Center"
                    IsVisible="{Binding SubmitError, Converter={x:StaticResource StringNotEmptyConverter}}"/>
 

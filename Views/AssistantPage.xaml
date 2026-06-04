@@ -22,7 +22,7 @@
                                ConverterParameter='Online|Offline'}"
                            Style="{StaticResource CaptionText}"
                            TextColor="{Binding IsAvailable, Converter={x:StaticResource BoolToColorConverter},
-                               ConverterParameter='#34C759|#FF3B30'}"/>
+                               ConverterParameter='#FFD60A|#9A9A9A'}"/>
                 </StackLayout>
             </HorizontalStackLayout>
         </Frame>
@@ -37,7 +37,7 @@
                         <Frame Style="{StaticResource UserBubble}"
                                IsVisible="{Binding IsUser}">
                             <Label Text="{Binding Text}"
-                                   TextColor="{StaticResource TextPrimary}"
+                                   TextColor="{StaticResource TextOnYellow}"
                                    FontSize="15"/>
                         </Frame>
                         <Frame Style="{StaticResource AiBubble}"

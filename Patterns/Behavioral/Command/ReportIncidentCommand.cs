@@ -15,6 +15,7 @@ public class ReportIncidentCommand : IUserCommand
     private readonly IncidentType _type;
     private readonly IncidentSeverity _severity;
     private readonly bool _anonymous;
+    private readonly IReadOnlyList<string> _mediaPaths;
     private Incident? _submitted;
 
     public string Description => $"Report {_type} at {_address}";
@@ -23,18 +24,20 @@ public class ReportIncidentCommand : IUserCommand
         IReportingFacade facade, IIncidentRepository repo,
         double lat, double lon, string address,
         IncidentType type, IncidentSeverity severity,
-        string description, bool anonymous)
+        string description, bool anonymous,
+        IEnumerable<string>? mediaPaths = null)
     {
         _facade = facade; _repo = repo;
         _lat = lat; _lon = lon; _address = address;
         _type = type; _severity = severity;
         _description = description; _anonymous = anonymous;
+        _mediaPaths = mediaPaths?.ToList() ?? [];
     }
 
     public async Task ExecuteAsync()
     {
         _submitted = await _facade.SubmitAsync(
-            _lat, _lon, _address, _type, _severity, _description, [], _anonymous);
+            _lat, _lon, _address, _type, _severity, _description, _mediaPaths, _anonymous);
     }
 
     public async Task UndoAsync()

@@ -14,6 +14,10 @@
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
     <WindowsPackageType>None</WindowsPackageType>
+    <!-- Embed assemblies directly in APK so adb install always deploys the correct DLL.
+         FastDev sidecar (default in Debug) stores DLLs separately; adb install misses them. -->
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+
     <!-- Android API 24 minimum, API 34 target -->
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
@@ -26,6 +30,8 @@
     <MauiImage Include="Resources\Images\*" />
     <MauiFont Include="Resources\Fonts\*" />
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- dotenv is the bundled env fallback; Android AAPT strips dotfiles so we use a plain name -->
+    <MauiAsset Include="Resources\Raw\dotenv" LogicalName="dotenv" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using SafeCity.Models;
 
 namespace SafeCity.Patterns.Behavioral.Observer;
@@ -15,7 +16,10 @@ public class IncidentAlertPublisher
     public void Subscribe(IIncidentObserver observer)
     {
         if (!_observers.Contains(observer))
+        {
             _observers.Add(observer);
+            Debug.WriteLine($"[SC-OBS] Subscribe: {observer.GetType().Name} → total={_observers.Count}");
+        }
     }
 
     public void Unsubscribe(IIncidentObserver observer) =>
@@ -23,6 +27,7 @@ public class IncidentAlertPublisher
 
     public void Publish(Incident incident)
     {
+        Debug.WriteLine($"[SC-OBS] Publish: '{incident.Title}' → {_observers.Count} subscriber(s): {string.Join(", ", _observers.Select(o => o.GetType().Name))}");
         foreach (var obs in _observers.ToList())
             obs.OnIncidentPublished(incident);
     }

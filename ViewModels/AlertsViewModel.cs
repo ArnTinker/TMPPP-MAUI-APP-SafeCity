@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SafeCity.Models;
@@ -28,6 +29,7 @@ public partial class AlertsViewModel : BaseViewModel, IIncidentObserver
         _publisher = publisher;
         _publisher.Subscribe(this);
         _isPremium = _session.CurrentUser?.IsPremium ?? false;
+        Debug.WriteLine($"[SC-ALERTS] AlertsViewModel constructed and subscribed");
     }
 
     [RelayCommand]
@@ -44,6 +46,7 @@ public partial class AlertsViewModel : BaseViewModel, IIncidentObserver
 
     public void OnIncidentPublished(Incident incident)
     {
+        Debug.WriteLine($"[SC-ALERTS] OnIncidentPublished: '{incident.Title}'");
         MainThread.BeginInvokeOnMainThread(() =>
         {
             var hydrated = _factory.Hydrate(incident);

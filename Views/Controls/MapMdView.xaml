@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafeCity.Views.Controls.MapMdView">
+
+    <Grid>
+        <!-- Black placeholder shown until map JS fires 'ready' (or on error) -->
+        <BoxView x:Name="Placeholder"
+                 Color="{StaticResource PrimaryBlack}" />
+        <Label  x:Name="PlaceholderLabel"
+                Text="Loading map…"
+                TextColor="{StaticResource TextGray}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                FontSize="14" />
+
+        <!-- Actual MapLibre WebView — hidden until ready -->
+        <WebView x:Name="MapWebView"
+                 IsVisible="False"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill" />
+    </Grid>
+
+</ContentView>

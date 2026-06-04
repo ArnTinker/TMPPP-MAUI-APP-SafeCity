@@ -17,7 +17,12 @@ public class VibrationNotificationDecorator : NotificationDecorator
 
     public override void Show()
     {
-        Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(_durationMs));
+        try
+        {
+            if (Vibration.Default.IsSupported)
+                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(_durationMs));
+        }
+        catch { /* vibrator unavailable — notification still shows */ }
         base.Show();
     }
 }

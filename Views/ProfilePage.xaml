@@ -74,6 +74,20 @@
                     HorizontalOptions="Fill"
                     Margin="0,16,0,0"/>
 
+            <!-- ── Debug tools ──────────────────────────────────────────── -->
+            <Label Text="── Debug ──"
+                   Style="{StaticResource CaptionText}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,24,0,0"/>
+
+            <Button Text="🐛 View Crash Log"
+                    Style="{StaticResource SecondaryPillButton}"
+                    Command="{Binding ViewCrashLogCommand}"/>
+
+            <Button Text="🗑 Clear Crash Log"
+                    Style="{StaticResource SecondaryPillButton}"
+                    Command="{Binding ClearCrashLogCommand}"/>
+
         </StackLayout>
     </ScrollView>
 

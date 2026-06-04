@@ -15,6 +15,7 @@
             <conv:InverseBoolConverter    x:Key="InverseBoolConverter" />
             <conv:BoolToColorConverter    x:Key="BoolToColorConverter" />
             <conv:BoolToStringConverter   x:Key="BoolToStringConverter" />
+            <conv:NullToBoolConverter     x:Key="NullToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

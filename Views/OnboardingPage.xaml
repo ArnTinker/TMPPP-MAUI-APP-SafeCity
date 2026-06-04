@@ -24,7 +24,7 @@
                     <Label Text="🔍" FontSize="28" VerticalOptions="Center"/>
                     <StackLayout>
                         <Label Text="Missing person found safe" FontAttributes="Bold"
-                               TextColor="{StaticResource PositiveGreen}" FontSize="15"/>
+                               TextColor="{StaticResource TextGray}" FontSize="15"/>
                         <Label Text="15 min ago · 1.1 km away" Style="{StaticResource CaptionText}"/>
                     </StackLayout>
                 </HorizontalStackLayout>

@@ -6,7 +6,7 @@ namespace SafeCity.Patterns.Creational.AbstractFactory;
 public class CriticalAlertFactory : IAlertStyleFactory
 {
     public AlertStyleBundle CreateBundle() =>
-        new("🚨", "#FF3B30", "alert_critical", UseVibration: true, PriorityLevel: 10);
+        new("🚨", "#FFD60A", "alert_critical", UseVibration: true, PriorityLevel: 10);
 
     public string CreateBannerTitle(string incidentTitle) =>
         $"⚠️ ALERT: {incidentTitle}";

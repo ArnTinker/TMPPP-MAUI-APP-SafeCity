@@ -63,4 +63,18 @@ public partial class ProfileViewModel : BaseViewModel
         _history.Clear();
         await Shell.Current.GoToAsync("//OnboardingPage");
     }
+
+    [RelayCommand]
+    private async Task ViewCrashLogAsync()
+    {
+        var log = CrashLogger.Read();
+        await Shell.Current.DisplayAlertAsync("Crash Log", log, "Close");
+    }
+
+    [RelayCommand]
+    private void ClearCrashLog()
+    {
+        CrashLogger.Clear();
+        _ = Shell.Current.DisplayAlertAsync("Crash Log", "Log cleared.", "OK");
+    }
 }

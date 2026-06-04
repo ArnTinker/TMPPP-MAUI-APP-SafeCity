@@ -17,3 +17,4 @@ obj/
 # Android keystore
 *.jks
 *.keystore
+dotenv

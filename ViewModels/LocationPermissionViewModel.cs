@@ -20,9 +20,9 @@ public partial class LocationPermissionViewModel : BaseViewModel
     {
         IsBusy = true;
         var loc = await _location.GetCurrentLocationAsync();
-        if (loc.HasValue)
+        if (loc.HasCoords)
         {
-            _session.UpdateLocation(loc.Value.Lat, loc.Value.Lon);
+            _session.UpdateLocation(loc.Lat, loc.Lon);
             _session.LocationGranted = true;
         }
         IsBusy = false;

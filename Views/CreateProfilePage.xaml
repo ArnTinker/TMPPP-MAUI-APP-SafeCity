@@ -23,7 +23,7 @@
         <Label Text="{Binding UsernameStatus}"
                TextColor="{Binding UsernameAvailable,
                    Converter={x:StaticResource BoolToColorConverter},
-                   ConverterParameter='#34C759|#FF3B30'}"
+                   ConverterParameter='#FFD60A|#9A9A9A'}"
                HorizontalTextAlignment="Center"/>
 
         <Button Text="Continue"

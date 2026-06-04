@@ -1,19 +1,26 @@
+using SafeCity.Helpers;
+
 namespace SafeCity;
 
 /// <summary>Central configuration constants and feature flags.</summary>
 public static class AppConfig
 {
-    // Replace with your Render.com URL once deployed
     public const string BackendBaseUrl = "https://safecity-api.onrender.com";
 
     // Feature flags
-    public const bool EnableGeminiAssistant = true;
-    public const bool EnableBackendSync     = false; // flip to true when backend is live
-    public const double NearbyRadiusKm      = 10.0;
-    public const int    MaxMediaAttachments  = 5;
-    public const int    FeedPageSize         = 20;
+    public const bool   EnableGeminiAssistant = true;
+    public const bool   EnableBackendSync     = false;
+    public const double NearbyRadiusKm        = 10.0;
+    public const int    MaxMediaAttachments    = 5;
+    public const int    FeedPageSize           = 20;
 
-    // Map default (center of a generic city — override once location is granted)
-    public const double DefaultLat = 48.8566;
-    public const double DefaultLon = 2.3522;
+    // Map defaults — Chișinău city centre
+    public const double DefaultLat = 47.0105;
+    public const double DefaultLon = 28.8638;
+
+    // map.md token — read from .env at runtime, never hardcoded
+    public static string? MapMdToken => EnvHelper.Get("MAPMD_TOKEN");
+
+    // OpenRouteService API key — read from .env at runtime, never hardcoded
+    public static string? OrsApiKey => EnvHelper.Get("ORS_API_KEY");
 }

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #map { width: 100vw; height: 100vh; background: #000000; overflow: hidden; }
+
+    /* Dark base tiles — canvas filter only, does not affect HTML overlay markers */
+    #map .maplibregl-canvas { filter: brightness(0.28) saturate(0.5); }
+    .maplibregl-ctrl-attrib, .maplibregl-ctrl-logo { display: none !important; }
+
+    /* ── User location dot ── */
+    .user-dot {
+      width: 20px; height: 20px;
+      background: #FFD60A;
+      border-radius: 50%;
+      border: 2.5px solid #000000;
+      box-shadow: 0 0 0 0 rgba(255,214,10,0.55);
+      animation: pulse 2.2s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0  0   rgba(255,214,10,0.55); }
+      60%  { box-shadow: 0 0 0  18px rgba(255,214,10,0);   }
+      100% { box-shadow: 0 0 0  0   rgba(255,214,10,0);    }
+    }
+
+    /* ── Incident markers ── */
+    .sc-marker {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 13px; font-weight: 700; font-family: sans-serif;
+      transition: transform 0.1s ease;
+    }
+    .sc-marker:active { transform: scale(0.88); }
+    .sc-marker.active   { background: #FFD60A; border: 2px solid #000; color: #000; }
+    .sc-marker.resolved { background: transparent; border: 2px solid #FFD60A; color: #FFD60A; }
+    .sc-marker.critical {
+      background: #FFD60A; border: 2px solid #000; color: #000;
+      box-shadow: 0 0 0 5px rgba(255,214,10,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    'use strict';
+
+    const TOKEN    = '{{MAPMD_TOKEN}}';
+    const markers  = {};
+    let   userDot  = null;
+    let   map      = null;
+
+    /* ── JS → C# channel ── */
+    function notifyNative(path) {
+      window.location.href = 'safecity://' + path;
+    }
+
+    /* ── Map init ── */
+    function initMap() {
+      try {
+        const authHeader = TOKEN ? ('Basic ' + btoa(TOKEN + ':')) : null;
+
+        map = new maplibregl.Map({
+          container: 'map',
+          style: 'https://map.md/tiles/styles/map/style.json',
+          center: [28.8638, 47.0105],
+          zoom: 12,
+          attributionControl: false,
+          transformRequest: (url) => {
+            if (url.startsWith('https://map.md/') && authHeader) {
+              return { url: url, headers: { 'Authorization': authHeader } };
+            }
+          }
+        });
+
+        map.on('load',  ()  => notifyNative('ready'));
+        map.on('error', (e) => notifyNative(
+          'error/' + encodeURIComponent((e.error && e.error.message) || 'unknown')));
+
+      } catch (ex) {
+        notifyNative('error/' + encodeURIComponent(ex.message || 'init_failed'));
+      }
+    }
+
+    /* ── C# → JS API (called via EvaluateJavaScriptAsync) ── */
+
+    window.setCenter = function(lat, lon, zoom) {
+      if (!map) return;
+      map.flyTo({ center: [lon, lat], zoom: zoom || 12, duration: 800 });
+    };
+
+    window.setUserLocation = function(lat, lon) {
+      if (!map) return;
+      const lngLat = [lon, lat];
+      if (userDot) { userDot.setLngLat(lngLat); return; }
+      const el = document.createElement('div');
+      el.className = 'user-dot';
+      userDot = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat(lngLat)
+        .addTo(map);
+    };
+
+    window.addMarker = function(id, lat, lon, severity, resolved) {
+      if (!map) return;
+      if (markers[id]) { markers[id].remove(); delete markers[id]; }
+
+      var isResolved = (resolved === true || resolved === 'true');
+      var isCritical = (severity === 'Critical');
+      var cssClass   = isResolved ? 'resolved' : isCritical ? 'critical' : 'active';
+      var icon       = isResolved ? '✓' : isCritical ? '!' : iconFor(severity);
+
+      var el = document.createElement('div');
+      el.className = 'sc-marker ' + cssClass;
+      el.textContent = icon;
+      el.addEventListener('click', function() { notifyNative('marker-tap/' + id); });
+
+      markers[id] = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([lon, lat])
+        .addTo(map);
+    };
+
+    window.clearMarkers = function() {
+      Object.values(markers).forEach(function(m) { m.remove(); });
+      var keys = Object.keys(markers);
+      keys.forEach(function(k) { delete markers[k]; });
+    };
+
+    /* ── ORS route polyline ── */
+    window.drawRoute = function(data) {
+      if (!map) return;
+      if (map.getSource('ors-route')) {
+        map.getSource('ors-route').setData(data);
+      } else {
+        map.addSource('ors-route', { type: 'geojson', data: data });
+        map.addLayer({
+          id:     'ors-route-line',
+          type:   'line',
+          source: 'ors-route',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint:  { 'line-color': '#FFD60A', 'line-width': 5, 'line-opacity': 0.9 }
+        });
+      }
+    };
+
+    window.clearRoute = function() {
+      if (!map) return;
+      var empty = { type: 'FeatureCollection', features: [] };
+      if (map.getSource('ors-route'))     map.getSource('ors-route').setData(empty);
+      if (map.getSource('ors-isochrone')) map.getSource('ors-isochrone').setData(empty);
+    };
+
+    /* ── ORS isochrone polygon ── */
+    window.drawIsochrone = function(data) {
+      if (!map) return;
+      if (map.getSource('ors-isochrone')) {
+        map.getSource('ors-isochrone').setData(data);
+      } else {
+        map.addSource('ors-isochrone', { type: 'geojson', data: data });
+        map.addLayer({
+          id:     'ors-isochrone-fill',
+          type:   'fill',
+          source: 'ors-isochrone',
+          paint:  { 'fill-color': '#FFD60A', 'fill-opacity': 0.15 }
+        });
+        map.addLayer({
+          id:     'ors-isochrone-line',
+          type:   'line',
+          source: 'ors-isochrone',
+          paint:  { 'line-color': '#FFD60A', 'line-width': 2, 'line-opacity': 0.7 }
+        });
+      }
+    };
+
+    function iconFor(severity) {
+      if (severity === 'High')   return '▲';
+      if (severity === 'Medium') return '◆';
+      return '·';
+    }
+
+    /* ── Bootstrap ── */
+    if (typeof maplibregl !== 'undefined') {
+      initMap();
+    } else {
+      window.addEventListener('load', initMap);
+    }
+  </script>
+</body>
+</html>

@@ -32,7 +32,7 @@
             </Frame>
 
             <Label Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource AlertRed}"
+                   TextColor="{StaticResource PrimaryYellow}"
                    IsVisible="{Binding ErrorMessage, Converter={x:StaticResource StringNotEmptyConverter}}"
                    HorizontalTextAlignment="Center"/>
 
@@ -52,7 +52,7 @@
             <Label Text="We don't sell your data."
                    Style="{StaticResource CaptionText}"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource PositiveGreen}"/>
+                   TextColor="{StaticResource PrimaryYellow}"/>
         </StackLayout>
     </ScrollView>
 

@@ -15,8 +15,12 @@ public class PriorityNotificationDecorator : NotificationDecorator
 
     public override void Show()
     {
-        // Escalate priority then delegate
-        Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+        try
+        {
+            if (Vibration.Default.IsSupported)
+                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+        }
+        catch { /* vibrator unavailable — notification still shows */ }
         base.Show();
     }
 }

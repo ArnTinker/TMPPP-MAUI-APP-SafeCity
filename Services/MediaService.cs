@@ -6,9 +6,10 @@ public class MediaService : IMediaService
     {
         try
         {
+            // PickPhotosAsync is the recommended API; take first selection for single-pick UX
             var results = await MediaPicker.Default.PickPhotosAsync();
             var result  = results?.FirstOrDefault();
-            return result?.FullPath;
+            return result is null ? null : await CopyToAppStorageAsync(result.FullPath);
         }
         catch { return null; }
     }
@@ -18,8 +19,17 @@ public class MediaService : IMediaService
         try
         {
             var result = await MediaPicker.Default.CapturePhotoAsync();
-            return result?.FullPath;
+            return result is null ? null : await CopyToAppStorageAsync(result.FullPath);
         }
         catch { return null; }
+    }
+
+    private static async Task<string> CopyToAppStorageAsync(string sourcePath)
+    {
+        var dest = Path.Combine(FileSystem.AppDataDirectory, $"photo_{Guid.NewGuid():N}.jpg");
+        using var src  = File.OpenRead(sourcePath);
+        using var dst  = File.Create(dest);
+        await src.CopyToAsync(dst);
+        return dest;
     }
 }
