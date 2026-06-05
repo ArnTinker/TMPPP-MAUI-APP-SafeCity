@@ -12,8 +12,8 @@
         <!-- ── Map surface + overlays ── -->
         <Grid Grid.Row="0">
 
-            <!-- Real MapLibre map (fills the cell) -->
-            <controls:MapMdView HorizontalOptions="Fill" VerticalOptions="Fill" />
+            <!-- Real Mapbox GL JS map (fills the cell) -->
+            <controls:MapboxMapView HorizontalOptions="Fill" VerticalOptions="Fill" />
 
             <!-- ── Search bar (top overlay) ── -->
             <Frame BackgroundColor="{StaticResource CardBackground}"

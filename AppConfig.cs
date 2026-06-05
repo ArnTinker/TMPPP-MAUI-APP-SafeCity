@@ -18,9 +18,11 @@ public static class AppConfig
     public const double DefaultLat = 47.0105;
     public const double DefaultLon = 28.8638;
 
-    // map.md token — read from .env at runtime, never hardcoded
-    public static string? MapMdToken => EnvHelper.Get("MAPMD_TOKEN");
+    // Mapbox public token — read from .env at runtime, never hardcoded.
+    // Powers the GL JS map, Directions, Geocoding and Isochrone APIs.
+    public static string? MapboxToken => EnvHelper.Get("MAPBOX_TOKEN");
 
-    // OpenRouteService API key — read from .env at runtime, never hardcoded
-    public static string? OrsApiKey => EnvHelper.Get("ORS_API_KEY");
+    // Optional custom Mapbox style URL (e.g. mapbox://styles/you/abc123).
+    // Falls back to mapbox://styles/mapbox/dark-v11 inside mapbox.html when empty.
+    public static string? MapboxStyleUrl => EnvHelper.Get("MAPBOX_STYLE_URL");
 }

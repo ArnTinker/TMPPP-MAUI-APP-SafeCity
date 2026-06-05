@@ -4,17 +4,17 @@ using SafeCity.Services.Maps;
 
 namespace SafeCity.Views.Controls;
 
-public partial class MapMdView : ContentView
+public partial class MapboxMapView : ContentView
 {
-    private readonly MapMdProvider _provider;
+    private readonly MapboxProvider _provider;
     private bool _loaded;
 
-    public MapMdView()
+    public MapboxMapView()
     {
         InitializeComponent();
         _provider = IPlatformApplication.Current!.Services
-            .GetRequiredService<MapMdProvider>();
-        _provider.MapReady    += OnProviderReady;
+            .GetRequiredService<MapboxProvider>();
+        _provider.MapReady     += OnProviderReady;
         _provider.MapLoadError += OnProviderError;
     }
 
@@ -39,12 +39,12 @@ public partial class MapMdView : ContentView
 
     private async Task LoadMapAsync()
     {
-        var token = AppConfig.MapMdToken ?? string.Empty;
-        Debug.WriteLine($"[SC-MAP] LoadMapAsync: token={(string.IsNullOrEmpty(token) ? "EMPTY" : $"{token[..8]}…")}");
+        var token = AppConfig.MapboxToken ?? string.Empty;
+        Debug.WriteLine($"[SC-MAP] LoadMapAsync: token={(string.IsNullOrEmpty(token) ? "EMPTY" : $"{token[..Math.Min(8, token.Length)]}…")}");
 
         if (string.IsNullOrEmpty(token))
         {
-            PlaceholderLabel.Text = "Set MAPMD_TOKEN in .env to enable the map.";
+            PlaceholderLabel.Text = "Set MAPBOX_TOKEN in .env to enable the map.";
             Debug.WriteLine("[SC-MAP] Aborted — no token.");
             return;
         }
@@ -52,20 +52,21 @@ public partial class MapMdView : ContentView
         var html = await GetMapHtmlAsync(token);
         Debug.WriteLine($"[SC-MAP] HTML loaded ({html.Length} chars), attaching WebView");
         _provider.Attach(MapWebView);
-        // BaseUrl = "https://map.md/" makes the WebView treat the inline HTML as
-        // same-origin with map.md tiles. Without it the origin is null (about:blank),
-        // which causes map.md to reject the Authorization-header CORS preflight.
-        MapWebView.Source = new HtmlWebViewSource { Html = html, BaseUrl = "https://map.md/" };
+        // A non-null https BaseUrl gives the inline page a real origin so Mapbox
+        // GL JS XHR/fetch tile requests behave (api.mapbox.com allows CORS from any origin).
+        MapWebView.Source = new HtmlWebViewSource { Html = html, BaseUrl = "https://localhost/" };
     }
 
     private static async Task<string> GetMapHtmlAsync(string token)
     {
         try
         {
-            await using var stream = await FileSystem.OpenAppPackageFileAsync("mapmd.html");
+            await using var stream = await FileSystem.OpenAppPackageFileAsync("mapbox.html");
             using var reader = new StreamReader(stream);
             var template = await reader.ReadToEndAsync();
-            return template.Replace("{{MAPMD_TOKEN}}", token);
+            return template
+                .Replace("{{MAPBOX_TOKEN}}", token)
+                .Replace("{{MAPBOX_STYLE}}", AppConfig.MapboxStyleUrl ?? string.Empty);
         }
         catch
         {

@@ -8,19 +8,19 @@ namespace SafeCity.Services.Maps;
 
 /// <summary>
 /// PATTERN 6 (Adapter — Object Adapter, continued from GeminiAssistantAdapter).
-/// Target:   IMapProvider  (what the rest of the app calls)
-/// Adaptee:  MapMdProvider (raw MapLibre JS bridge)
-/// This class translates domain-level IMapProvider calls into the MapLibre JS
-/// string API expected by mapmd.html. Swapping the map provider only requires a
+/// Target:   IMapProvider   (what the rest of the app calls)
+/// Adaptee:  MapboxProvider (raw Mapbox GL JS bridge)
+/// This class translates domain-level IMapProvider calls into the Mapbox GL JS
+/// string API expected by mapbox.html. Swapping the map provider only requires a
 /// new adapter — no ViewModel or Repository changes.
 /// </summary>
-public sealed class MapMdAdapter : IMapProvider
+public sealed class MapboxMapAdapter : IMapProvider
 {
-    private readonly MapMdProvider _provider;
+    private readonly MapboxProvider _provider;
 
     public bool IsReady => _provider.IsReady;
 
-    public event Action<int>?   MarkerTapped
+    public event Action<int>? MarkerTapped
     {
         add    => _provider.MarkerTapped += value;
         remove => _provider.MarkerTapped -= value;
@@ -32,7 +32,7 @@ public sealed class MapMdAdapter : IMapProvider
         remove => _provider.MapLoadError -= value;
     }
 
-    public MapMdAdapter(MapMdProvider provider) => _provider = provider;
+    public MapboxMapAdapter(MapboxProvider provider) => _provider = provider;
 
     public void CenterOn(double lat, double lon, double zoomLevel = 12) =>
         _ = _provider.ExecuteAsync(

@@ -3,27 +3,27 @@ using System.Diagnostics;
 namespace SafeCity.Services.Maps;
 
 /// <summary>
-/// Adaptee for the Adapter pattern: owns the raw WebView ↔ MapLibre JS bridge.
-/// Knows nothing about Incident models — that translation is MapMdAdapter's job.
+/// Adaptee for the Adapter pattern: owns the raw WebView ↔ Mapbox GL JS bridge.
+/// Knows nothing about Incident models — that translation is MapboxMapAdapter's job.
 /// Queues JS calls that arrive before the map fires 'ready' and replays them on init.
 /// </summary>
-public sealed class MapMdProvider
+public sealed class MapboxProvider
 {
-    private WebView?              _webView;
-    private bool                  _mapReady;
+    private WebView?               _webView;
+    private bool                   _mapReady;
     private readonly Queue<string> _pendingJs = new();
 
-    public event Action?        MapReady;
-    public event Action<int>?   MarkerTapped;
+    public event Action?         MapReady;
+    public event Action<int>?    MarkerTapped;
     public event Action<string>? MapLoadError;
 
     public bool IsReady => _mapReady;
 
-    // ── Called by MapMdView once the WebView is in the visual tree ──
+    // ── Called by MapboxMapView once the WebView is in the visual tree ──
 
     public void Attach(WebView webView)
     {
-        _webView           = webView;
+        _webView            = webView;
         _webView.Navigating += OnNavigating;
     }
 
@@ -35,7 +35,7 @@ public sealed class MapMdProvider
         _mapReady = false;
     }
 
-    // ── Raw JS execution (called by MapMdAdapter) ──
+    // ── Raw JS execution (called by MapboxMapAdapter) ──
 
     public Task ExecuteAsync(string js)
     {

@@ -44,9 +44,9 @@ public static class MauiProgram
         // ── HTTP clients ──
         s.AddHttpClient("Gemini");
         s.AddHttpClient("Media");
-        s.AddHttpClient("ORS", client =>
+        s.AddHttpClient("Mapbox", client =>
         {
-            client.BaseAddress = new Uri("https://api.openrouteservice.org");
+            client.BaseAddress = new Uri("https://api.mapbox.com");
         });
 
         // ── Database ──
@@ -83,10 +83,10 @@ public static class MauiProgram
             return new GeminiAssistantAdapter(factory, key);
         });
 
-        // ── PATTERN 6 (continued): Adapter — map.md / MapLibre map provider ──
-        s.AddSingleton<MapMdProvider>();
+        // ── PATTERN 6 (continued): Adapter — Mapbox GL JS map provider ──
+        s.AddSingleton<MapboxProvider>();
         s.AddSingleton<IMapProvider>(sp =>
-            new MapMdAdapter(sp.GetRequiredService<MapMdProvider>()));
+            new MapboxMapAdapter(sp.GetRequiredService<MapboxProvider>()));
 
         // ── PATTERN 8: Proxy — media loader with caching ──
         s.AddSingleton<IMediaLoader>(sp =>
@@ -100,10 +100,10 @@ public static class MauiProgram
         s.AddSingleton<IMediaService,    MediaService>();
         s.AddSingleton<IAuthService,     AuthService>();
 
-        // ── ORS routing, geocoding, isochrones (Dependency Inversion: VMs use interfaces) ──
-        s.AddSingleton<IRoutingService,   OrsRoutingService>();
-        s.AddSingleton<IGeocodingService, OrsGeocodingService>();
-        s.AddSingleton<IIsochroneService, OrsIsochroneService>();
+        // ── Mapbox routing, geocoding, isochrones (Dependency Inversion: VMs use interfaces) ──
+        s.AddSingleton<IRoutingService,   MapboxRoutingService>();
+        s.AddSingleton<IGeocodingService, MapboxGeocodingService>();
+        s.AddSingleton<IIsochroneService, MapboxIsochroneService>();
 
         // ── ViewModels (Transient = fresh VM per navigation) ──
         s.AddTransient<OnboardingViewModel>();

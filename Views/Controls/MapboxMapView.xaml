@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SafeCity.Views.Controls.MapMdView">
+             x:Class="SafeCity.Views.Controls.MapboxMapView">
 
     <Grid>
         <!-- Black placeholder shown until map JS fires 'ready' (or on error) -->
@@ -14,7 +14,7 @@
                 VerticalOptions="Center"
                 FontSize="14" />
 
-        <!-- Actual MapLibre WebView — hidden until ready -->
+        <!-- Actual Mapbox GL JS WebView — hidden until ready -->
         <WebView x:Name="MapWebView"
                  IsVisible="False"
                  HorizontalOptions="Fill"
